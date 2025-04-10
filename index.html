@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Timer Hitung Mundur Elegan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .time-card {
+        position: relative;
+        overflow: hidden;
+      }
+      .time-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #3b82f6, #93c5fd, #3b82f6);
+        animation: shimmer 2s infinite linear;
+      }
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+      .fullscreen-mode .non-timer-text {
+        display: none;
+      }
+      /* Animasi untuk fullscreen button */
+      .fullscreen-btn {
+        transition: all 0.3s ease;
+      }
+      .fullscreen-btn:hover {
+        transform: scale(1.1);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex items-center justify-center bg-slate-900">
+    <div class="container mx-auto px-4">
+      <div id="main-container" class="max-w-3xl mx-auto bg-slate-800 rounded-xl p-8 shadow-2xl">
+        <h1 class="text-4xl font-bold text-center mb-8 text-blue-400 non-timer-text">Timer Hitung Mundur</h1>
+
+        <!-- Tombol Fullscreen -->
+        <div class="absolute top-4 right-4">
+          <button id="fullscreen-button" class="fullscreen-btn bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 1v4m0 0h-4m4 0l-5-5" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Setup Section -->
+        <div id="setup-section" class="mb-8">
+          <h2 class="text-2xl font-semibold mb-4 text-blue-300 non-timer-text">Atur Durasi Timer</h2>
+          <div class="grid grid-cols-4 gap-4">
+            <div class="flex flex-col items-center">
+              <label for="hours" class="mb-2 text-gray-300 non-timer-text">Jam</label>
+              <input type="number" id="hours" min="0" max="99" value="0" class="w-full text-center bg-slate-700 text-white border-2 border-blue-500 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+            </div>
+            <div class="flex flex-col items-center">
+              <label for="minutes" class="mb-2 text-gray-300 non-timer-text">Menit</label>
+              <input type="number" id="minutes" min="0" max="59" value="0" class="w-full text-center bg-slate-700 text-white border-2 border-blue-500 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+            </div>
+            <div class="flex flex-col items-center">
+              <label for="seconds" class="mb-2 text-gray-300 non-timer-text">Detik</label>
+              <input type="number" id="seconds" min="0" max="59" value="0" class="w-full text-center bg-slate-700 text-white border-2 border-blue-500 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+            </div>
+            <div class="flex flex-col items-center">
+              <label for="milliseconds" class="mb-2 text-gray-300 non-timer-text">Milidetik</label>
+              <input type="number" id="milliseconds" min="0" max="999" step="10" value="0" class="w-full text-center bg-slate-700 text-white border-2 border-blue-500 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+            </div>
+          </div>
+          <div class="mt-6 flex justify-center">
+            <button id="start-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg">Mulai Hitung Mundur</button>
+          </div>
+        </div>
+
+        <!-- Timer Section -->
+        <div id="timer-section" class="hidden">
+          <div class="grid grid-cols-4 gap-4 mb-6">
+            <div class="time-card p-6 flex flex-col items-center bg-slate-700 rounded-lg">
+              <div id="hours-display" class="text-5xl font-bold text-blue-400 mb-2">00</div>
+              <div class="text-gray-400 timer-label">Jam</div>
+            </div>
+            <div class="time-card p-6 flex flex-col items-center bg-slate-700 rounded-lg">
+              <div id="minutes-display" class="text-5xl font-bold text-blue-400 mb-2">00</div>
+              <div class="text-gray-400 timer-label">Menit</div>
+            </div>
+            <div class="time-card p-6 flex flex-col items-center bg-slate-700 rounded-lg">
+              <div id="seconds-display" class="text-5xl font-bold text-blue-400 mb-2">00</div>
+              <div class="text-gray-400 timer-label">Detik</div>
+            </div>
+            <div class="time-card p-6 flex flex-col items-center bg-slate-700 rounded-lg">
+              <div id="milliseconds-display" class="text-5xl font-bold text-blue-400 mb-2">000</div>
+              <div class="text-gray-400 timer-label">Milidetik</div>
+            </div>
+          </div>
+          <div class="flex justify-center space-x-4">
+            <button id="pause-button" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300">Jeda</button>
+            <button id="reset-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Elements
+        const setupSection = document.getElementById("setup-section");
+        const timerSection = document.getElementById("timer-section");
+        const startButton = document.getElementById("start-button");
+        const pauseButton = document.getElementById("pause-button");
+        const resetButton = document.getElementById("reset-button");
+        const fullscreenButton = document.getElementById("fullscreen-button");
+        const mainContainer = document.getElementById("main-container");
+
+        // Input fields
+        const hoursInput = document.getElementById("hours");
+        const minutesInput = document.getElementById("minutes");
+        const secondsInput = document.getElementById("seconds");
+        const millisecondsInput = document.getElementById("milliseconds");
+
+        // Display elements
+        const hoursDisplay = document.getElementById("hours-display");
+        const minutesDisplay = document.getElementById("minutes-display");
+        const secondsDisplay = document.getElementById("seconds-display");
+        const millisecondsDisplay = document.getElementById("milliseconds-display");
+
+        let totalMilliseconds = 0;
+        let countdownInterval;
+        let isPaused = false;
+        let startTime,
+          pauseStart,
+          pausedTime = 0;
+        let isFullscreen = false;
+
+        // Input validation
+        function validateInputs() {
+          hoursInput.value = Math.max(0, Math.min(99, parseInt(hoursInput.value) || 0));
+          minutesInput.value = Math.max(0, Math.min(59, parseInt(minutesInput.value) || 0));
+          secondsInput.value = Math.max(0, Math.min(59, parseInt(secondsInput.value) || 0));
+          millisecondsInput.value = Math.max(0, Math.min(999, parseInt(millisecondsInput.value) || 0));
+        }
+
+        [hoursInput, minutesInput, secondsInput, millisecondsInput].forEach((input) => {
+          input.addEventListener("change", validateInputs);
+          input.addEventListener("blur", validateInputs);
+        });
+
+        // Start countdown
+        startButton.addEventListener("click", function () {
+          validateInputs();
+
+          const hours = parseInt(hoursInput.value) || 0;
+          const minutes = parseInt(minutesInput.value) || 0;
+          const seconds = parseInt(secondsInput.value) || 0;
+          const milliseconds = parseInt(millisecondsInput.value) || 0;
+
+          totalMilliseconds = hours * 3600000 + minutes * 60000 + seconds * 1000 + milliseconds;
+
+          if (totalMilliseconds <= 0) {
+            alert("Silakan atur durasi timer terlebih dahulu!");
+            return;
+          }
+
+          setupSection.classList.add("hidden");
+          timerSection.classList.remove("hidden");
+
+          // Tambahkan kelas untuk menyembunyikan teks saat timer berjalan
+          document.body.classList.add("fullscreen-mode");
+
+          startTime = Date.now();
+          updateTimerDisplay(totalMilliseconds);
+
+          countdownInterval = setInterval(function () {
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - startTime - pausedTime;
+            const remainingTime = totalMilliseconds - elapsedTime;
+
+            if (remainingTime <= 0) {
+              clearInterval(countdownInterval);
+              updateTimerDisplay(0);
+              alert("Waktu habis!");
+              return;
+            }
+
+            updateTimerDisplay(remainingTime);
+          }, 10);
+        });
+
+        // Pause/Resume countdown
+        pauseButton.addEventListener("click", function () {
+          if (isPaused) {
+            // Resume
+            isPaused = false;
+            pauseButton.textContent = "Jeda";
+            pauseButton.classList.remove("bg-green-600", "hover:bg-green-700");
+            pauseButton.classList.add("bg-yellow-600", "hover:bg-yellow-700");
+
+            const pauseDuration = Date.now() - pauseStart;
+            pausedTime += pauseDuration;
+
+            countdownInterval = setInterval(function () {
+              const currentTime = Date.now();
+              const elapsedTime = currentTime - startTime - pausedTime;
+              const remainingTime = totalMilliseconds - elapsedTime;
+
+              if (remainingTime <= 0) {
+                clearInterval(countdownInterval);
+                updateTimerDisplay(0);
+                alert("Waktu habis!");
+                return;
+              }
+
+              updateTimerDisplay(remainingTime);
+            }, 10);
+          } else {
+            // Pause
+            isPaused = true;
+            pauseButton.textContent = "Lanjutkan";
+            pauseButton.classList.remove("bg-yellow-600", "hover:bg-yellow-700");
+            pauseButton.classList.add("bg-green-600", "hover:bg-green-700");
+
+            clearInterval(countdownInterval);
+            pauseStart = Date.now();
+          }
+        });
+
+        // Reset countdown
+        resetButton.addEventListener("click", function () {
+          clearInterval(countdownInterval);
+          isPaused = false;
+          pausedTime = 0;
+
+          setupSection.classList.remove("hidden");
+          timerSection.classList.add("hidden");
+
+          // Hapus kelas untuk menampilkan teks kembali
+          document.body.classList.remove("fullscreen-mode");
+
+          pauseButton.textContent = "Jeda";
+          pauseButton.classList.remove("bg-green-600", "hover:bg-green-700");
+          pauseButton.classList.add("bg-yellow-600", "hover:bg-yellow-700");
+        });
+
+        // Update timer display
+        function updateTimerDisplay(remainingMilliseconds) {
+          const hours = Math.floor(remainingMilliseconds / 3600000);
+          const minutes = Math.floor((remainingMilliseconds % 3600000) / 60000);
+          const seconds = Math.floor((remainingMilliseconds % 60000) / 1000);
+          const milliseconds = remainingMilliseconds % 1000;
+
+          hoursDisplay.textContent = hours.toString().padStart(2, "0");
+          minutesDisplay.textContent = minutes.toString().padStart(2, "0");
+          secondsDisplay.textContent = seconds.toString().padStart(2, "0");
+          millisecondsDisplay.textContent = milliseconds.toString().padStart(3, "0");
+        }
+
+        // Fullscreen functionality
+        fullscreenButton.addEventListener("click", toggleFullscreen);
+
+        function toggleFullscreen() {
+          if (!isFullscreen) {
+            // Masuk mode fullscreen
+            if (document.documentElement.requestFullscreen) {
+              document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+              document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) {
+              document.documentElement.msRequestFullscreen();
+            }
+
+            fullscreenButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    `;
+            isFullscreen = true;
+          } else {
+            // Keluar dari mode fullscreen
+            if (document.exitFullscreen) {
+              document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+              document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+              document.msExitFullscreen();
+            }
+
+            fullscreenButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 1v4m0 0h-4m4 0l-5-5" />
+                        </svg>
+                    `;
+            isFullscreen = false;
+          }
+        }
+
+        // Deteksi perubahan status fullscreen browser
+        document.addEventListener("fullscreenchange", handleFullscreenChange);
+        document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+        document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+        document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+
+        function handleFullscreenChange() {
+          isFullscreen = !!document.fullscreenElement || !!document.webkitFullscreenElement || !!document.mozFullScreenElement || !!document.msFullscreenElement;
+
+          if (!isFullscreen) {
+            fullscreenButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 1v4m0 0h-4m4 0l-5-5" />
+                        </svg>
+                    `;
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
